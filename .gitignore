@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# 忽略 main.cpp 文件
+main.cpp
+
+# 忽略 CLion 构建文件夹
+cmake-build-debug/
+cmake-build-release/
+.idea

@@ -39,5 +39,5 @@ cmake-build-debug/
 cmake-build-release/
 .idea
 
-#
+# 部分使用 不忽略文件
 !target_super_easy.exe

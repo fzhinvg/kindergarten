@@ -38,3 +38,6 @@ main.cpp
 cmake-build-debug/
 cmake-build-release/
 .idea
+
+#
+!target_super_easy.exe

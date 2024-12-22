@@ -60,7 +60,7 @@ void byteHippo(const T &obj)
 
 #if 0
 template<typename T>
-void ByteHippo(const T *address, size_t size)
+void byteHippo(const T *address, size_t size)
 {
 	const auto bytePointer = reinterpret_cast<const uint8_t *>(address);
 

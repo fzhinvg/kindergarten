@@ -19,7 +19,7 @@ union FloatInt
 
 struct Message
 {
-	enum data_t : int // 4
+	enum data_t // int 4 传统枚举底层类型通常是int,但不可显式指定
 	{
 		intType,
 		floatType,
@@ -31,6 +31,7 @@ struct Message
 		float floatValue;
 		char charValue;
 	} data; // 4
+//	int i = intType; // 传统枚举量可以隐式转换 枚举类是强类型就需要显示转换
 }; // 8
 
 union Register // 硬件寄存器操作

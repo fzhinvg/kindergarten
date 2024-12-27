@@ -12,8 +12,8 @@ enum class Time : uint16_t
 	evening,
 	midnight
 };
-
-enum class Permission : uint8_t
+// 传统枚举底层类型通常是int,但不可显式指定
+enum class Permission : uint8_t // 枚举类可以显式指定底层类型,控制内存使用和数据类型
 {
 	None = 0b0000'0000,
 	Create = 0b0000'0001,
@@ -93,7 +93,7 @@ int main()
 
 	Permission permission = Permission::Create |
 							Permission::Update |
-							Permission::Delete;
+							Permission::Delete; // 枚举类的作用域限制相当于给枚举量添加了一个命名空间,从而实现只能在定义的作用域内访问,避免了命名冲突
 	size_t permissionSize = sizeof(permission);
 	std::cout << static_cast<int>(permission) << std::endl;
 

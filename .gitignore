@@ -43,3 +43,6 @@ cmake-build-release/
 
 # 忽略粘贴板,一个用于存储临时代码于编辑的经常修改的文件
 pasteboard.cpp
+
+# 新增忽略文件夹
+TemplateChallenge/

@@ -275,3 +275,94 @@ int main()
 	delete pBtB;
 	return 0;
 }
+template<typename T>
+void byteHippoWithIndex(const T *address, size_t size)
+{
+	const auto bytePointer = reinterpret_cast<const uint8_t *>(address);
+
+	size_t bytesPerLine = 16;
+	int addressWidth = sizeof(void *) * 2; // 计算地址宽度，32位系统是8，64位系统是16
+
+	// 打印地址位移行
+	std::cout << std::setw(addressWidth + 2) << "  "; // 地址宽度和偏移量分隔
+	std::cout << " ";
+	for (size_t offset = 0; offset < bytesPerLine; ++offset)
+	{
+		std::cout << std::setw(2) << std::setfill('0') << std::hex << offset;
+		if ((offset + 1) % 4 == 0) // 每4个字节分隔
+		{
+			std::cout << "   "; // 3sp
+		} else
+		{
+			std::cout << " "; // 1sp
+		}
+	}
+	std::cout << std::endl;
+
+	for (size_t byteIndex = 0; byteIndex < size; ++byteIndex)
+	{
+		if (byteIndex % bytesPerLine == 0)
+		{
+			std::cout << std::setw(addressWidth) << std::setfill('0') << std::hex
+					  << reinterpret_cast<uintptr_t>(bytePointer + byteIndex) << ":  ";
+		}
+		std::cout << std::setw(2) << std::setfill('0') << static_cast<int>(bytePointer[byteIndex]);
+
+		if ((byteIndex + 1) % 4 == 0) // 每解析4个字节就合适宽一点,好看
+		{
+			std::cout << "   "; // 3sp
+		} else
+		{
+			std::cout << " "; // 1sp 每个字节就1个用来隔断
+		}
+
+		// 检查是不是已经输出了完整的一行16个字节
+		if ((byteIndex + 1) % bytesPerLine == 0)
+		{
+			std::cout << " ";
+			for (size_t charIndex = byteIndex - 15; charIndex <= byteIndex; ++charIndex)
+			{
+				if (std::isprint(bytePointer[charIndex])) // 1==可打印输出的ascii
+				{
+					std::cout << static_cast<char>(bytePointer[charIndex]);
+				} else
+				{
+					std::cout << "·"; // copilot告诉我这个叫中点,十分之十一优雅
+				}
+			}
+			std::cout << std::endl;
+		}
+	}
+
+	// 处理最后一行不足16字节的情况
+	size_t remaining = size % bytesPerLine;
+	if (remaining > 0) // 此时光标在最后一个被处理的字节的位置,后面就是填充
+	{
+		// 用 "  " 填充不足的部分
+		for (size_t i = 0; i < (bytesPerLine - remaining); ++i)
+		{
+			std::cout << "  "; // 2sp 字节填充
+			if ((i + remaining + 1) % 4 == 0)
+			{
+				std::cout << "   "; // 3sp 分隔好看
+			} else
+			{
+				std::cout << " "; // 1sp 字节间距
+			}
+		}
+		std::cout << " "; // 开始翻译成ascii
+		for (size_t i = size - remaining; i < size; ++i)
+		{
+			if (std::isprint(bytePointer[i]))
+			{
+				std::cout << static_cast<char>(bytePointer[i]);
+			} else
+			{
+				std::cout << "·";
+			}
+		}
+		std::cout << std::endl;
+	}
+
+	std::cout << std::dec << std::endl;
+}

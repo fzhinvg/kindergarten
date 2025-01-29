@@ -4,19 +4,27 @@
 /*
  * 免责声明：
  * 本程序仅供学习和研究用途，严禁用于任何形式的作弊行为。
+ * 严禁将本程序用于任何形式的商业行为。
+ * 严禁以任何非法目的或途径使用本程序。
  * 作者不对因使用本程序而产生的任何直接或间接损失负责。
+ * 作者保留程序的版权和知识产权，禁止任何未经授权的修改和再分发行为。
+ * 使用者需自行承担使用本程序或由此产生的所有后果和责任。
  * 请尊重游戏规则，公平竞争。
- * 使用本源码以及生成的可执行文件默认已阅读此声明。
+ * 使用本源码以及生成的可执行程序默认已阅读此声明。
  *
  * Disclaimer:
  * This program is for educational and research purposes only.
  * The author is not responsible for any direct or indirect damage caused by using this program.
+ * Commercial use of this program in any form is strictly prohibited.
+ * The use of this program for any illegal purpose or by any illegal means is strictly prohibited.
+ * The author retains copyright and intellectual property rights of the program. Unauthorized modification and redistribution are prohibited.
+ * Users are responsible for any outcomes and liabilities resulting from the use of this code or the resulting executable program.
  * Please respect the game rules and engage in fair play.
  * By using this source code and any resulting executable program, you acknowledge that you have read, understood, and agreed to this disclaimer.
  */
 
 /*
- * 使用方法:
+ * 程序逻辑:
  * 将对应osu文件重命名为target.osu放在同一个目录下
  * 运行后等待提示,使用 C 键目押第一个note,观察散布,如果不满意就使用按esc终止进程,重新运行.
  * */

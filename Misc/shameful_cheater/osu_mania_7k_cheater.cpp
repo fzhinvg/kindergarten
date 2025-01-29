@@ -1,5 +1,5 @@
 //
-// Created by fzhinvg on 2025/1/28.
+// Created by fzhinvg on 2025/1/29.
 // 请不要使用此代码以及生成的可执行文件,这是一个作弊程序
 /*
  * 免责声明：
@@ -14,7 +14,6 @@
  * Please respect the game rules and engage in fair play.
  * By using this source code and any resulting executable program, you acknowledge that you have read, understood, and agreed to this disclaimer.
  */
-
 /*
  * 使用方法:
  * 将对应osu文件重命名为target.osu放在同一个目录下
@@ -95,6 +94,11 @@ void simulateKeyPress(WORD vk, time_t holding_time = 1) // time(ms)
 
 void resetKeyTrack()
 {
+	std::thread reset_s{[]
+						{
+							simulateKeyPress(VkKeyScan('s'));
+							std::this_thread::sleep_for(std::chrono::milliseconds(100));
+						}};
 	std::thread reset_d{[]
 						{
 							simulateKeyPress(VkKeyScan('d'));
@@ -105,6 +109,11 @@ void resetKeyTrack()
 							simulateKeyPress(VkKeyScan('f'));
 							std::this_thread::sleep_for(std::chrono::milliseconds(100));
 						}};
+	std::thread reset_sp{[]
+						 {
+							 simulateKeyPress(VK_SPACE);
+							 std::this_thread::sleep_for(std::chrono::milliseconds(100));
+						 }};
 	std::thread reset_j{[]
 						{
 							simulateKeyPress(VkKeyScan('j'));
@@ -115,10 +124,18 @@ void resetKeyTrack()
 							simulateKeyPress(VkKeyScan('k'));
 							std::this_thread::sleep_for(std::chrono::milliseconds(100));
 						}};
+	std::thread reset_l{[]
+						{
+							simulateKeyPress(VkKeyScan('l'));
+							std::this_thread::sleep_for(std::chrono::milliseconds(100));
+						}};
+	reset_s.join();
 	reset_d.join();
 	reset_f.join();
+	reset_sp.join();
 	reset_j.join();
 	reset_k.join();
+	reset_l.join();
 }
 
 #pragma endregion
@@ -192,10 +209,13 @@ enum KeyType
 };
 enum KeyValue
 {
-	d = 64,
-	f = 192,
-	j = 320,
-	k = 448
+	s = 36,
+	d = 109,
+	f = 182,
+	sp = 256,
+	j = 329,
+	k = 402,
+	l = 475
 };
 time_t forward_offset = 0; // 用于目押
 
@@ -208,21 +228,31 @@ private:
 	time_t _end_time;
 	time_t _holding_time;
 public:
-	explicit Key(const HitObject &note) : _click_time(note.click_time - forward_offset), _end_time(note.end_time - forward_offset)
+	explicit Key(const HitObject &note) : _click_time(note.click_time - forward_offset),
+										  _end_time(note.end_time - forward_offset)
 	{
 		switch (note.x)
 		{
+			case KeyValue::s:
+				this->_key_value = KeyValue::s;
+				break;
 			case KeyValue::d :
 				this->_key_value = KeyValue::d;
 				break;
 			case KeyValue::f :
 				this->_key_value = KeyValue::f;
 				break;
+			case KeyValue::sp:
+				this->_key_value = KeyValue::sp;
+				break;
 			case KeyValue::j :
 				this->_key_value = KeyValue::j;
 				break;
 			case KeyValue::k :
 				this->_key_value = KeyValue::k;
+				break;
+			case KeyValue::l:
+				this->_key_value = KeyValue::l;
 				break;
 			default:
 				std::cerr << "wrong key value" << note.x << std::endl;
@@ -257,10 +287,13 @@ public:
 	friend KeyTrack;
 
 	friend void separate2tracks(std::vector<Key> &key_vector,
+								KeyTrack &s_track,
 								KeyTrack &d_track,
 								KeyTrack &f_track,
+								KeyTrack &sp_track,
 								KeyTrack &j_track,
-								KeyTrack &k_track);
+								KeyTrack &k_track,
+								KeyTrack &l_track);
 };
 
 #pragma endregion
@@ -308,11 +341,17 @@ public:
 		char vk_char;
 		switch (_track_key_value)
 		{
+			case KeyValue::s:
+				vk_char = 's';
+				break;
 			case KeyValue::d:
 				vk_char = 'd';
 				break;
 			case KeyValue::f:
 				vk_char = 'f';
+				break;
+			case KeyValue::sp:
+				vk_char = VK_SPACE;
 				break;
 			case KeyValue::j:
 				vk_char = 'j';
@@ -320,11 +359,21 @@ public:
 			case KeyValue::k:
 				vk_char = 'k';
 				break;
+			case KeyValue::l:
+				vk_char = 'l';
+				break;
 			default:
 				std::cerr << "fatal error" << std::endl;
 				break;
 		}
-		auto vk = VkKeyScan(vk_char);
+		decltype(VkKeyScan(' ')) vk;
+		if (vk_char != VK_SPACE)
+		{
+			vk = VkKeyScan(vk_char);
+		} else
+		{
+			vk = VK_SPACE;
+		}
 		TimelineTracker timelineTracker{};
 		time_t predict_offset = 5;
 		auto top = key_vector.begin();
@@ -364,80 +413,41 @@ public:
 
 	}
 
-//	void old_version_RunTrack() // thread function
-//	{
-//		std::unique_lock<std::mutex> lck(mtx);
-//		cv.wait(lck, []
-//		{ return ready; });
-//		lck.unlock();
-//		cv.notify_all();
-//		std::cout << "Task:" << this->_track_key_value << " is running" << std::endl;
-//		time_t pre_note_click_time = 0;
-//		char vk_char;
-//		switch (_track_key_value)
-//		{
-//			case KeyValue::d:
-//				vk_char = 'd';
-//				break;
-//			case KeyValue::f:
-//				vk_char = 'f';
-//				break;
-//			case KeyValue::j:
-//				vk_char = 'j';
-//				break;
-//			case KeyValue::k:
-//				vk_char = 'k';
-//				break;
-//			default:
-//				std::cerr << "fatal error" << std::endl;
-//				break;
-//		}
-//
-//		TimelineTracker timelineTracker{};
-//		timelineTracker.start();
-//		for (const auto &key: this->key_vector)
-//		{
-//			if (key._key_type == KeyType::note)
-//			{
-//				std::this_thread::sleep_for(std::chrono::milliseconds(key._click_time - pre_note_click_time));
-//				std::cout << timelineTracker.getElapsedTime() << " ";
-//				simulateKeyPress(VkKeyScan(vk_char));
-//				pre_note_click_time = key._click_time;
-//			} else
-//			{
-//				std::this_thread::sleep_for(
-//						std::chrono::milliseconds(key._click_time - pre_note_click_time - key._holding_time));
-//				std::cout << timelineTracker.getElapsedTime() << " ";
-//				simulateKeyPress(VkKeyScan(vk_char), key._holding_time);
-//				pre_note_click_time = key._click_time;
-//			}
-//
-//		}
-//
-//	}
 };
 
 void separate2tracks(std::vector<Key> &key_vector,
+					 KeyTrack &s_track,
 					 KeyTrack &d_track,
 					 KeyTrack &f_track,
+					 KeyTrack &sp_track,
 					 KeyTrack &j_track,
-					 KeyTrack &k_track)
+					 KeyTrack &k_track,
+					 KeyTrack &l_track)
 {
 	for (auto &key: key_vector)
 	{
 		switch (key._key_value)
 		{
+			case KeyValue::s:
+				s_track.add_key(key);
+				break;
 			case KeyValue::d:
 				d_track.add_key(key);
 				break;
 			case KeyValue::f:
 				f_track.add_key(key);
 				break;
+			case KeyValue::sp:
+				sp_track.add_key(key);
+				break;
 			case KeyValue::j:
 				j_track.add_key(key);
 				break;
 			case KeyValue::k:
 				k_track.add_key(key);
+				break;
+			case KeyValue::l:
+				l_track.add_key(key);
 				break;
 			default:
 				key.display();
@@ -502,7 +512,7 @@ int main()
 	// 获取当前进程的句柄
 	HANDLE hProcess = GetCurrentProcess();
 
-	// 设置进程优先级为 HIGH_PRIORITY_CLASS
+	// 设置进程优先级为 HIGH_PRIORITY_CLASS 用于提高线程同步率
 	if (SetPriorityClass(hProcess, HIGH_PRIORITY_CLASS))
 	{
 		std::cout << "Process priority set to HIGH_PRIORITY_CLASS." << std::endl;
@@ -525,7 +535,7 @@ int main()
 	std::vector<HitObject> note_vector;
 	parseOsuFile("target.osu", note_vector);
 
-	forward_offset=(note_vector.begin()->click_time-10); // 用于目押
+	forward_offset = (note_vector.begin()->click_time - 10); // 用于目押
 
 	// 把所有的note转换成我自己的key结构
 	std::vector<Key> key_vector;
@@ -535,24 +545,41 @@ int main()
 		key_vector.emplace_back(obj);
 	}
 
-	// 分轨 4k -> df_jk
+	// 分轨 7k -> sdf space jkl
+	KeyTrack s_track{KeyValue::s};
 	KeyTrack d_track{KeyValue::d};
 	KeyTrack f_track{KeyValue::f};
+	KeyTrack sp_track{KeyValue::sp};
 	KeyTrack j_track{KeyValue::j};
 	KeyTrack k_track{KeyValue::k};
+	KeyTrack l_track{KeyValue::l};
 
-	separate2tracks(key_vector, d_track, f_track, j_track, k_track);
+	separate2tracks(key_vector,
+					s_track,
+					d_track,
+					f_track,
+					sp_track,
+					j_track,
+					k_track,
+					l_track);
 
 	// test only
 //	f_track.display();
 
-	size_t key_cout = d_track.get_key_vector_size() +
+	size_t key_cout = s_track.get_key_vector_size() +
+					  d_track.get_key_vector_size() +
 					  f_track.get_key_vector_size() +
+					  sp_track.get_key_vector_size() +
 					  j_track.get_key_vector_size() +
-					  k_track.get_key_vector_size();
+					  k_track.get_key_vector_size() +
+					  l_track.get_key_vector_size();
 
 	std::cout << key_cout << std::endl;
 
+	std::thread s_task{[&]
+					   {
+						   s_track.RunTrack();
+					   }};
 	std::thread d_task{[&]
 					   {
 						   d_track.RunTrack();
@@ -561,6 +588,10 @@ int main()
 					   {
 						   f_track.RunTrack();
 					   }};
+	std::thread sp_task{[&]
+						{
+							sp_track.RunTrack();
+						}};
 	std::thread j_task{[&]
 					   {
 						   j_track.RunTrack();
@@ -569,12 +600,18 @@ int main()
 					   {
 						   k_track.RunTrack();
 					   }};
+	std::thread l_task{[&]
+					   {
+						   l_track.RunTrack();
+					   }};
 
-
+	s_task.detach();
 	d_task.detach();
 	f_task.detach();
+	sp_task.detach();
 	j_task.detach();
 	k_task.detach();
+	l_task.detach();
 	std::cout << "get ready..." << std::endl;
 
 	MSG msg = {};

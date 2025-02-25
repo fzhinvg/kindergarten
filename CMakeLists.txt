@@ -28,8 +28,8 @@ include_directories(${SDL3_IMAGE_INCLUDE_DIRS})
 
 add_executable(${PROJECT_NAME}
         main.cpp
-        TemplateChallenge/kit.h
-        kindergarten.rc) # 我其实不是很理解为什么CLion要给我自动添加这一句,AI告诉我使用特定IDE可以提升开发体验 ( ´_ゝ` )
+        TemplateChallenge/kit.h # 我其实不是很理解为什么CLion要给我自动添加这一句,AI告诉我使用特定IDE可以提升开发体验 ( ´_ゝ` )
+        kindergarten.rc)
 
 # link        --3
 #target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX) # openmp也需要手动添加

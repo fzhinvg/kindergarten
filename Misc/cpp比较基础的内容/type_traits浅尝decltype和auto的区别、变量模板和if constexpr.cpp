@@ -14,7 +14,7 @@ using FuncPtr = decltype(&foo);
 template<typename T>
 void process(T value)
 {
-	// if constexpr实际上的作用是吧它的作用域内的代码进行条件编译,完全没有if语句判断和分支的功能
+	// if constexpr实际上的作用是把它的作用域内的代码进行条件编译,完全没有if语句判断和分支的功能
 	// 我更应该把它视作一个条件编译代码块的工具,而不是分支工具
 	if constexpr (std::is_integral<T>::value)
 	{

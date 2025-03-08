@@ -13,6 +13,9 @@
 #include <cstdint>
 #include <cstring>
 #include <cctype>
+#include <source_location>
+#include <mutex>
+
 
 namespace tc // 哦,我的老天.这样简直酷到爆炸
 {
@@ -72,6 +75,62 @@ namespace tc // 哦,我的老天.这样简直酷到爆炸
 		}
 	};
 
+	class Log
+	{
+	private:
+//	std::string _timestamp;
+		std::string _tag;
+		std::string _filename;
+		std::string _code_line;
+		std::string _message;
+
+		[[nodiscard]] static std::string timestampMs()
+		{
+			auto now = std::chrono::system_clock::now();
+			auto in_time_t = std::chrono::system_clock::to_time_t(now);
+			auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+
+			struct tm tm_buf{};
+#if defined(_WIN32)
+			localtime_s(&tm_buf, &in_time_t);
+#else
+			localtime_r(&in_time_t, &tm_buf);
+#endif
+
+			std::stringstream ss;
+			ss << "[" << std::put_time(&tm_buf, "%H:%M:%S")
+			   << "." << std::setfill('0') << std::setw(3) << ms.count()
+			   << "]";
+			return ss.str();
+		}
+
+	public:
+		std::string makeLog()
+		{
+			return std::format("{} [{}] [{}:{}] - {}",
+							   timestampMs(), _tag, _filename, _code_line, _message);
+		};
+
+		Log(std::string tag,
+			std::string message,
+			const std::source_location &loc) :
+				_tag(std::move(tag)),
+				_filename(loc.file_name()),
+				_code_line(std::to_string(loc.line())),
+				_message(std::move(message))
+		{}
+
+	};
+
+	void log(const std::string &tag, const std::string &message,
+			 const std::source_location &loc = std::source_location::current())
+	{
+		static std::mutex log_mutex;
+		std::lock_guard<std::mutex> lock(log_mutex);
+
+		Log log{tag, message, loc};
+		std::cout << log.makeLog() << std::endl; // 不要过早地开始优化
+	}
 
 }
 

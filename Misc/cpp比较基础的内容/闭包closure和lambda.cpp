@@ -7,10 +7,10 @@
 #include <thread>
 #include <chrono>
 
-auto outFunc()
+auto closure()// 一个包含代码和数据的对象
 {
     int cnt = 0;
-    return [=]mutable
+    return [=]mutable // 使用值捕获，防止引用捕获出现悬垂引用
     {
         cnt++;
         std::cout << cnt << std::endl;
@@ -33,13 +33,16 @@ int main()
         }
     }; // 某种意义上可以用这种写法制造一个伪的 local function
 
-    auto f = outFunc();
+    auto f = closure();
+    auto f_ = closure(); // 重点在于每个不同的函数对象都可以有自己独立的状态
+    // 闭包（Closure）的核心目标正是让每个函数对象能够拥有独立的状态 -> 状态独立性 <-
+    // 所以采用 函数 + 其关联的私有数据环境
     auto fn = Inner::func();
     std::cout << typeid(f).name() << std::endl;
     std::cout << typeid(fn).name() << std::endl;
 
     void (*log)() =[]
-    { std::cout << "hello" << std::endl; }; // 这样就可以隐式转化成一个函数指针
+    { std::cout << "There's more to it than that, if you'd only ever come back." << std::endl; }; // 这样就可以隐式转化成一个函数指针
     /*
      * 这里引申出一个问题，关于std::thread的构造，使用函数指针就不必纠结了
      * 实际上std::thread构造使用的是一个可调用对象，也就是说传入的如果是一个对象
@@ -73,8 +76,10 @@ int main()
     }
 
     f();
+    f_();
     f();
     f();
+    f_();
     f();
 
 

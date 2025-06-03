@@ -15,6 +15,7 @@
 #include <cctype>
 #include <source_location>
 #include <mutex>
+#include <fstream>
 
 
 namespace tc // 哦,我的老天.这样简直酷到爆炸
@@ -42,7 +43,7 @@ namespace tc // 哦,我的老天.这样简直酷到爆炸
 				  << "] " << message << " ";//<< std::endl; // 是否换行
 	}
 
-	void timestamp_ms(const std::string &message = "")
+	void timestamp_ms(const std::string &message = "") // 这个是微秒表
 	{
 		auto now = std::chrono::system_clock::now();
 		auto in_time_t = std::chrono::system_clock::to_time_t(now);
@@ -130,6 +131,26 @@ namespace tc // 哦,我的老天.这样简直酷到爆炸
 
 		Log log{tag, message, loc};
 		std::cout << log.makeLog() << std::endl; // 不要过早地开始优化
+	}
+
+	void log(const std::string &tag, const std::string &message,
+			 const std::filesystem::path &filepath,
+			 const std::source_location &loc = std::source_location::current())
+	{
+		static std::mutex log_mutex;
+		std::lock_guard<std::mutex> lock(log_mutex);
+
+//	static std::ofstream logger{filepath, std::ios::app};
+		std::ofstream logger{filepath, std::ios::app}; // <- 我也忘了我当时是咋想的,应该是为了可以使用多个log文件存储信息
+		if (logger.is_open())
+		{
+			Log log{tag, message, loc};
+			std::string str = log.makeLog();
+			logger << str<< '\n' << std::flush; // <-
+		} else
+		{
+			std::cerr << "log file does not exist" << std::endl;
+		}
 	}
 
 }

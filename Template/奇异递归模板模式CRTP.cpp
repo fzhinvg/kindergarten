@@ -81,8 +81,8 @@ int main() {
     IBase<ImplClassA> &ref_impl_a = impl_a;
     IBase<ImplClassB> &ref_impl_b = impl_b;
 
-    tc::printFunctionSignature(ref_impl_a);
-    tc::printFunctionSignature(ref_impl_b);
+    kit::printSignature(ref_impl_a);
+    kit::printSignature(ref_impl_b);
 
     ref_impl_a.interface();
     ref_impl_b.interface(); // 通过基类引用调用

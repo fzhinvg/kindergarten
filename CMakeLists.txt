@@ -16,13 +16,13 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}") # 这一句还不能跟对应的
 set(CMAKE_CXX_STANDARD 23)
 
 #find_package(OpenMP REQUIRED)
-find_package(SDL3 CONFIG REQUIRED) #到头来还不如直接用vcpkg,够无脑
-find_package(SDL3_image CONFIG REQUIRED)
+#find_package(SDL3 CONFIG REQUIRED) #到头来还不如直接用vcpkg,够无脑
+#find_package(SDL3_image CONFIG REQUIRED)
 
 #include_dict --1
 include_directories(TemplateChallenge)
-include_directories(${SDL3_INCLUDE_DIRS})
-include_directories(${SDL3_IMAGE_INCLUDE_DIRS})
+#include_directories(${SDL3_INCLUDE_DIRS})
+#include_directories(${SDL3_IMAGE_INCLUDE_DIRS})
 
 #link_dict    --2
 
@@ -33,8 +33,8 @@ add_executable(${PROJECT_NAME}
 
 # link        --3
 #target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX) # openmp也需要手动添加
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image-shared)
+#target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
+#target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image-shared)
 
 # -g 调试符号信息 -O0 禁用优化
 #target_compile_options(${PROJECT_NAME} PRIVATE -g -O0 -fexec-charset=GBK -finput-charset=UTF-8) # mingw 我的mingw没选多线程

@@ -1,2 +1,2 @@
 # kindergarten
-  1 tab = 4 sp
+  这里什么都没有

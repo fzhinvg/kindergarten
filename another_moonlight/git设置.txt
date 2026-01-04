@@ -1,0 +1,20 @@
+// 设置代理:
+git config --global http.proxy 'http://代理地址:端口'
+git config --global https.proxy 'http://代理地址:端口'
+
+git config --global http.proxy 'http://127.0.0.1:XXXX'
+git config --global https.proxy 'http://127.0.0.1:XXXX'
+
+// 移除代理:
+git config --unset http.proxy
+git config --unset https.proxy
+
+// 查看全局配置:
+git config --global --list
+
+// 设置全局用户
+git config --global user.name "username"
+git config --global user.email "username@example.com"
+// github 通过 email 地址 来关联本地 git 提交与 github 用户
+// github 通过提交记录中的 user.email 来匹配 github 账户
+// 只要本地设置的email与github账户中已验证的邮箱一致,提交就会关联到你的github账户

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.29)
 
-set(PROJECT_NAME kindergarten)
+set(PROJECT_NAME ALTER_PROJECT_NAME)
 project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 23)
@@ -16,7 +16,7 @@ if(WIN32)
     file(GLOB STATIC_LIBS "${CMAKE_SOURCE_DIR}/lib/static/*.a")
     file(GLOB DYNAMIC_LIBS "${CMAKE_SOURCE_DIR}/lib/shared/*.dll.a")
     file(GLOB RUNTIME_DLLS "${CMAKE_SOURCE_DIR}/lib/shared/*.dll")
-    set(RC_FILE ${PROJECT_NAME}.rc) # 其实不是非得要这个东西,没啥用
+#    set(RC_FILE ${PROJECT_NAME}.rc) # 其实不是非得要这个东西,没啥用
 elseif(UNIX AND NOT APPLE)
     file(GLOB STATIC_LIBS "${CMAKE_SOURCE_DIR}/lib/static/*.a")
     file(GLOB DYNAMIC_LIBS "${CMAKE_SOURCE_DIR}/lib/shared/*.so")
@@ -27,7 +27,8 @@ endif()
 
 add_executable(${PROJECT_NAME}
         ${SOURCES}
-        ${RC_FILE})
+#        ${RC_FILE}
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${STATIC_LIBS} ${DYNAMIC_LIBS})
 
